@@ -1,7 +1,7 @@
 // src/components/RegistrationPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db, createUserWithEmailAndPassword } from "../services/firebase";
+import { auth, db, createUserWithEmailAndPassword } from "../../services/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
 const RegistrationPage = () => {

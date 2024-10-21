@@ -1,6 +1,6 @@
 // src/components/ApplicationStatus.js
 import React, { useEffect, useState } from "react";
-import { db, auth } from "../services/firebase";
+import { db, auth } from "../../../services/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 const ApplicationStatus = () => {

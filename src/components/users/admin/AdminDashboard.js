@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import JobManagement from "./JobManagement";
 import ApplicationManagement from "./ApplicationManagement";
 import AdminProfile from "./AdminProfile";
+import GraduateManagement from "./GraduateManagement";
 import { getAuth } from "firebase/auth";
 
 const AdminDashboard = () => {
@@ -28,6 +29,8 @@ const AdminDashboard = () => {
         return <ApplicationManagement />;
       case "profile":
         return <AdminProfile />;
+      case "graduateapplications":
+        return <GraduateManagement />;
       default:
         return <JobManagement />;
     }
@@ -54,6 +57,14 @@ const AdminDashboard = () => {
               }`}
             >
               Application Management
+            </li>
+            <li
+              onClick={() => setActiveTab("graduateapplications")}
+              className={`p-4 cursor-pointer hover:bg-blue-500 ${
+                activeTab === "graduateapplications" ? "bg-blue-700" : ""
+              }`}
+            >
+              Graduate Management
             </li>
             <li
               onClick={() => setActiveTab("profile")}

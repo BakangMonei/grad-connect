@@ -6,21 +6,18 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import LoginPage from "./components/LoginPage";
-import RegistrationPage from "./components/RegistrationPage";
-import ForgotPasswordPage from "./components/ForgotPasswordPage";
-import GraduateDashboard from "./components/GraduateDashboard";
-import AdminDashboard from "./components/AdminDashboard";
-import SplashScreen from "./components/SplashScreen";
+import LoginPage from "./components/auth/LoginPage";
+import RegistrationPage from "./components/auth/RegistrationPage";
+import ForgotPasswordPage from "./components/auth/ForgotPasswordPage";
+import GraduateDashboard from "./components/users/graduate/GraduateDashboard";
+import AdminDashboard from "./components/users/admin/AdminDashboard";
+import SplashScreen from "./pages/SplashScreen";
 import { auth } from "./services/firebase";
+import GraduateManagement from "./components/users/admin/GraduateManagement";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 function App() {
   const [user] = useAuthState(auth);
-
-  // Role-based access can be managed here. Example: using a simple role field from user metadata.
-  // In a more complete setup, you could store user roles in Firestore and check them here.
-  const isAdmin = user?.email === "admin@example.com"; // Replace with your logic to identify admin users
 
   return (
     <Router>
@@ -32,6 +29,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/graduate-dashboard" element={<GraduateDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/GraduateManagement" element={<GraduateManagement />} />
 
         {/* Redirect to login if user is not authenticated */}
         {!user && <Route path="*" element={<Navigate to="/login" />} />}

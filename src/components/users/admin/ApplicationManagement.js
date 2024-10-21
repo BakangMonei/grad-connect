@@ -1,25 +1,17 @@
 // src/components/ApplicationManagement.js
-import React, { useState, useEffect } from "react";
-import { db } from "../services/firebase";
-import {
-  collection,
-  updateDoc,
-  deleteDoc,
-  doc,
-  getDocs,
-} from "firebase/firestore";
+import React, { useState, useEffect } from 'react';
+import { db } from '../../../services/firebase';
+import { collection, updateDoc, deleteDoc, doc, getDocs } from 'firebase/firestore';
 
 const ApplicationManagement = () => {
   const [applications, setApplications] = useState([]);
-  const [newStatus, setNewStatus] = useState("");
   const [editApplicationId, setEditApplicationId] = useState(null);
+  const [newStatus, setNewStatus] = useState('');
 
   useEffect(() => {
     const fetchApplications = async () => {
-      const querySnapshot = await getDocs(collection(db, "applications"));
-      setApplications(
-        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-      );
+      const querySnapshot = await getDocs(collection(db, 'applications'));
+      setApplications(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
 
     fetchApplications();
@@ -27,26 +19,22 @@ const ApplicationManagement = () => {
 
   const handleUpdateApplication = async (id) => {
     try {
-      const applicationDoc = doc(db, "applications", id);
+      const applicationDoc = doc(db, 'applications', id);
       await updateDoc(applicationDoc, { status: newStatus });
-      setApplications(
-        applications.map((app) =>
-          app.id === id ? { ...app, status: newStatus } : app
-        )
-      );
+      setApplications(applications.map((app) => (app.id === id ? { ...app, status: newStatus } : app)));
       setEditApplicationId(null);
-      setNewStatus("");
+      setNewStatus('');
     } catch (error) {
-      console.error("Error updating application:", error);
+      alert('Error updating application: ' + error.message);
     }
   };
 
   const handleDeleteApplication = async (id) => {
     try {
-      await deleteDoc(doc(db, "applications", id));
+      await deleteDoc(doc(db, 'applications', id));
       setApplications(applications.filter((app) => app.id !== id));
     } catch (error) {
-      console.error("Error deleting application:", error);
+      alert('Error deleting application: ' + error.message);
     }
   };
 
@@ -57,15 +45,9 @@ const ApplicationManagement = () => {
         {applications.map((app) => (
           <li key={app.id} className="mb-2 flex justify-between items-center">
             <div>
-              <p>
-                <strong>Job:</strong> {app.jobTitle}
-              </p>
-              <p>
-                <strong>Applicant ID:</strong> {app.userId}
-              </p>
-              <p>
-                <strong>Status:</strong> {app.status}
-              </p>
+              <p><strong>Job:</strong> {app.jobTitle}</p>
+              <p><strong>Applicant ID:</strong> {app.userId}</p>
+              <p><strong>Status:</strong> {app.status}</p>
             </div>
             <div>
               <input

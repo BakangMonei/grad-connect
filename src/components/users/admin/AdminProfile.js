@@ -1,6 +1,6 @@
 // src/components/AdminProfile.js
 import React, { useState, useEffect } from "react";
-import { auth, db } from "../services/firebase";
+import { auth, db } from "../../../services/firebase";
 import { doc, getDoc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

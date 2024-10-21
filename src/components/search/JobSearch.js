@@ -1,6 +1,6 @@
 // src/components/JobSearch.js
 import React, { useState, useEffect } from "react";
-import { db } from "../services/firebase";
+import { db } from "../../services/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 const JobSearch = () => {
