@@ -1,8 +1,7 @@
 // src/components/LoginPage.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../services/firebase";
-import "firebase/auth"; // Import Firebase Authentication
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import {
   getFirestore,
   collection,
@@ -10,8 +9,6 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-require("firebase/auth");
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -23,6 +20,7 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError(null); // Clear any previous errors
 
     if (!email || !password) {
       setError("Email and password are required.");
@@ -30,30 +28,28 @@ const LoginPage = () => {
     }
 
     try {
+      // Check for the user in different collections
       const userSnapshot = await getDocs(
-        query(collection(db, "users"), where("email", "==", email))
+        query(collection(db, "graduates"), where("email", "==", email))
       );
       const adminSnapshot = await getDocs(
         query(collection(db, "admin"), where("email", "==", email))
       );
-      const s_adminSnapshot = await getDocs(
+      const sAdminSnapshot = await getDocs(
         query(collection(db, "s_admin"), where("email", "==", email))
       );
 
+      // Sign in the user if they exist in one of the collections
+      await signInWithEmailAndPassword(auth, email, password);
+
       if (userSnapshot.size > 0) {
-        // User exists in the 'user' collection
-        await signInWithEmailAndPassword(auth, email, password);
         navigate("/graduate-dashboard");
       } else if (adminSnapshot.size > 0) {
-        // User exists in the 'admin' collection
-        await signInWithEmailAndPassword(auth, email, password);
         navigate("/admin-dashboard");
-      } else if (s_adminSnapshot.size > 0) {
-        // User exists in the 's_admin' collection
-        await signInWithEmailAndPassword(auth, email, password);
+      } else if (sAdminSnapshot.size > 0) {
         navigate("/SuperAdminDashboard");
       } else {
-        setError("Invalid email or password.");
+        setError("Invalid email or password. Please check your credentials.");
       }
     } catch (error) {
       setError(error.message);
@@ -65,6 +61,7 @@ const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
         <form onSubmit={handleLogin}>
           <input
             type="email"
@@ -72,6 +69,7 @@ const LoginPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full p-3 mb-4 border rounded"
+            required
           />
           <input
             type="password"
@@ -79,6 +77,7 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-3 mb-4 border rounded"
+            required
           />
           <button
             type="submit"
