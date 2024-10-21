@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import Login from "../components/Login";
 import Register from "../components/Register";
-import ForgotPassword from "../components/ForgotPassword";
+import ForgotPassword from "../components/ForgotPasswordPage";
 
 const Home = () => {
   const [authMode, setAuthMode] = useState("login");
