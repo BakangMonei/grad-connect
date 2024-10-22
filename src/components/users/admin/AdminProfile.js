@@ -4,8 +4,19 @@ import { auth, db } from "../../../services/firebase";
 import { doc, getDoc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  User,
+  MapPin,
+  Phone,
+  Briefcase,
+  Mail,
+  Edit2,
+  Trash2,
+  Loader2,
+} from "lucide-react";
 
 const AdminProfile = () => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [adminData, setAdminData] = useState({
     firstName: "",
     lastName: "",
@@ -90,103 +101,184 @@ const AdminProfile = () => {
   };
 
   if (loading) {
-    return <p className="text-center text-gray-500">Loading profile...</p>;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+      </div>
+    );
   }
 
+  const ProfileField = ({ icon: Icon, label, value }) => (
+    <div className="flex items-center space-x-2 py-2">
+      <Icon className="h-4 w-4 text-gray-500" />
+      <div>
+        <span className="text-sm font-medium text-gray-500">{label}:</span>
+        <span className="ml-2 text-sm">{value}</span>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="max-w-lg mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
-      <h3 className="text-xl font-semibold mb-6 text-gray-700">
-        Admin Profile
-      </h3>
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="flex items-center mb-4">
+        <User className="h-5 w-5 text-gray-700 mr-2" />
+        <h1 className="text-xl font-semibold">Admin Profile</h1>
+      </div>
       {isEditing ? (
-        <div className="flex flex-col gap-4">
-          <input
-            type="text"
-            placeholder="First Name"
-            value={adminData.firstName}
-            onChange={(e) =>
-              setAdminData({ ...adminData, firstName: e.target.value })
-            }
-            className="border border-gray-300 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 p-3 rounded-md transition duration-200"
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={adminData.lastName}
-            onChange={(e) =>
-              setAdminData({ ...adminData, lastName: e.target.value })
-            }
-            className="border border-gray-300 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 p-3 rounded-md transition duration-200"
-          />
-          <input
-            type="text"
-            placeholder="Location"
-            value={adminData.location}
-            onChange={(e) =>
-              setAdminData({ ...adminData, location: e.target.value })
-            }
-            className="border border-gray-300 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 p-3 rounded-md transition duration-200"
-          />
-          <input
-            type="text"
-            placeholder="Phone Number"
-            value={adminData.phoneNumber}
-            onChange={(e) =>
-              setAdminData({ ...adminData, phoneNumber: e.target.value })
-            }
-            className="border border-gray-300 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 p-3 rounded-md transition duration-200"
-          />
-          <input
-            type="text"
-            placeholder="Background"
-            value={adminData.background}
-            onChange={(e) =>
-              setAdminData({ ...adminData, background: e.target.value })
-            }
-            className="border border-gray-300 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100 p-3 rounded-md transition duration-200"
-          />
-          <button
-            onClick={handleUpdateProfile}
-            className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-md shadow-sm transition duration-200"
-          >
-            Save
-          </button>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label htmlFor="firstName" className="text-sm text-gray-600">
+                First Name
+              </label>
+              <input
+                id="firstName"
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={adminData.firstName}
+                onChange={(e) =>
+                  setAdminData({ ...adminData, firstName: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="lastName" className="text-sm text-gray-600">
+                Last Name
+              </label>
+              <input
+                id="lastName"
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={adminData.lastName}
+                onChange={(e) =>
+                  setAdminData({ ...adminData, lastName: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="location" className="text-sm text-gray-600">
+                Location
+              </label>
+              <input
+                id="location"
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={adminData.location}
+                onChange={(e) =>
+                  setAdminData({ ...adminData, location: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="phoneNumber" className="text-sm text-gray-600">
+                Phone Number
+              </label>
+              <input
+                id="phoneNumber"
+                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={adminData.phoneNumber}
+                onChange={(e) =>
+                  setAdminData({ ...adminData, phoneNumber: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="background" className="text-sm text-gray-600">
+              Background
+            </label>
+            <input
+              id="background"
+              className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={adminData.background}
+              onChange={(e) =>
+                setAdminData({ ...adminData, background: e.target.value })
+              }
+            />
+          </div>
+          <div className="flex justify-end space-x-2 pt-4">
+            <button
+              onClick={() => setIsEditing(false)}
+              className="px-4 py-2 border rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleUpdateProfile}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-4">
-          <p>
-            <strong>Email:</strong> {adminData.email}
-          </p>
-          <p>
-            <strong>First Name:</strong> {adminData.firstName}
-          </p>
-          <p>
-            <strong>Last Name:</strong> {adminData.lastName}
-          </p>
-          <p>
-            <strong>Location:</strong> {adminData.location}
-          </p>
-          <p>
-            <strong>Phone Number:</strong> {adminData.phoneNumber}
-          </p>
-          <p>
-            <strong>Background:</strong> {adminData.background}
-          </p>
-          <button
-            onClick={() => setIsEditing(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-md shadow-sm transition duration-200"
-          >
-            Edit Profile
-          </button>
-          <button
-            onClick={handleDeleteAccount}
-            className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-md shadow-sm transition duration-200"
-          >
-            Delete Account
-          </button>
+          <ProfileField icon={Mail} label="Email" value={adminData.email} />
+          <ProfileField
+            icon={User}
+            label="Name"
+            value={`${adminData.firstName} ${adminData.lastName}`}
+          />
+          <ProfileField
+            icon={MapPin}
+            label="Location"
+            value={adminData.location}
+          />
+          <ProfileField
+            icon={Phone}
+            label="Phone"
+            value={adminData.phoneNumber}
+          />
+          <ProfileField
+            icon={Briefcase}
+            label="Background"
+            value={adminData.background}
+          />
+
+          <div className="flex justify-end space-x-2 pt-4">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-2 px-4 py-2 border rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+            >
+              <Edit2 className="h-4 w-4" />
+              Edit Profile
+            </button>
+            <button
+              onClick={() => setShowDeleteDialog(true)}
+              className="flex items-center gap-2 px-4 py-2 border rounded bg-red-500 text-white hover:bg-red-600"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Account
+            </button>
+          </div>
         </div>
       )}
-      <ToastContainer />
+
+      {/* Delete Account Confirmation */}
+      {showDeleteDialog && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-md max-w-sm">
+            <h2 className="text-lg font-semibold text-gray-800">
+              Are you sure?
+            </h2>
+            <p className="text-sm text-gray-600 mt-2">
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <button
+                onClick={() => setShowDeleteDialog(false)}
+                className="px-4 py-2 border rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
