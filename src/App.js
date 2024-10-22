@@ -11,7 +11,7 @@ import RegistrationPage from "./components/auth/RegistrationPage";
 import ForgotPasswordPage from "./components/auth/ForgotPasswordPage";
 import GraduateDashboard from "./components/users/graduate/GraduateDashboard";
 import AdminDashboard from "./components/users/admin/AdminDashboard";
-import JobPosts from "./components/users/graduate/JobPosts"
+import JobPosts from "./components/users/graduate/JobPosts";
 import SplashScreen from "./pages/SplashScreen";
 import { auth } from "./services/firebase";
 import GraduateManagement from "./components/users/admin/GraduateManagement";
