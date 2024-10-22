@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { auth, db } from "../../../services/firebase";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../../services/firebase";
+import { Menu, X, Briefcase, User, LogOut } from "lucide-react";
 import JobPosts from "./JobPosts";
 import GraduateProfile from "./GraduateProfile";
-import {
-  FaBars,
-  FaUser,
-  FaBriefcase,
-  FaSignOutAlt,
-  FaTimes,
-} from "react-icons/fa";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const GraduateDashboard = () => {
-  const [activeTab, setActiveTab] = useState("JobPosts");
+  const [activeTab, setActiveTab] = useState("jobposts");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userData, setUserData] = useState({});
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const navigate = useNavigate();
   const auth = getAuth();
 
@@ -43,95 +39,104 @@ const GraduateDashboard = () => {
     }
   };
 
+  const navigationItems = [
+    {
+      id: "jobposts",
+      label: "Job Posts",
+      icon: <Briefcase className="w-5 h-5" />,
+    },
+    { id: "profile", label: "My Profile", icon: <User className="w-5 h-5" /> },
+  ];
+
   const renderContent = () => {
-    switch (activeTab) {
-      case "JobPosts":
-        return <JobPosts />;
-      case "profile":
-        return <GraduateProfile />;
-      default:
-        return <JobPosts />;
-    }
+    const components = {
+      jobposts: JobPosts,
+      profile: GraduateProfile,
+    };
+    const Component = components[activeTab] || JobPosts;
+    return <Component />;
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex">
+      {/* Mobile menu button */}
+      <button
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-blue-600 text-white"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        {isMobileMenuOpen ? (
+          <X className="w-6 h-6" />
+        ) : (
+          <Menu className="w-6 h-6" />
+        )}
+      </button>
+
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 bg-blue-600 text-white w-64 transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-300 ease-in-out z-20`}
+        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 transform ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 transition-transform duration-300 ease-in-out bg-blue-600 text-white flex flex-col`}
       >
-        <div className="flex items-center justify-between p-6">
-          <span className="text-2xl font-bold">Graduate Dashboard</span>
-          <button
-            className="text-white focus:outline-none lg:hidden"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <FaBars size={24} />
-          </button>
-        </div>
-        <div className="px-6">
-          <p className="text-sm">
+        <div className="p-6 border-b border-blue-500">
+          <h1 className="text-2xl font-bold">Graduate Dashboard</h1>
+          <div className="mt-2 text-sm font-medium">
             {userData.firstName} {userData.lastName}
-          </p>
+          </div>
         </div>
-        <nav className="mt-6">
-          <ul>
-            <li
-              onClick={() => setActiveTab("JobPosts")}
-              className={`flex items-center p-4 cursor-pointer hover:bg-blue-500 ${
-                activeTab === "JobPosts" ? "bg-blue-700" : ""
-              }`}
-            >
-              <FaBriefcase className="mr-3" />
-              Dashboard
-            </li>
 
-            <li
-              onClick={() => setActiveTab("profile")}
-              className={`flex items-center p-4 cursor-pointer hover:bg-blue-500 ${
-                activeTab === "profile" ? "bg-blue-700" : ""
-              }`}
-            >
-              <FaUser className="mr-3" />
-              My Profile
-            </li>
-
-            <li
-              onClick={handleLogout}
-              className="flex items-center p-4 cursor-pointer hover:bg-red-500"
-            >
-              <FaSignOutAlt className="mr-3" />
-              Logout
-            </li>
+        <nav className="flex-1 overflow-y-auto">
+          <ul className="py-4">
+            {navigationItems.map((item) => (
+              <li key={item.id}>
+                <button
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center px-6 py-3 text-left hover:bg-blue-500 transition-colors ${
+                    activeTab === item.id ? "bg-blue-700" : ""
+                  }`}
+                >
+                  {item.icon}
+                  <span className="ml-3">{item.label}</span>
+                </button>
+              </li>
+            ))}
           </ul>
         </nav>
+
+        <button
+          onClick={handleLogout}
+          className="p-4 flex items-center text-left hover:bg-red-500 transition-colors border-t border-blue-500"
+        >
+          <LogOut className="w-5 h-5" />
+          <span className="ml-3">Logout</span>
+        </button>
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 p-6 lg:ml-64">
-        <header className="flex justify-between items-center mb-6">
-          <button
-            className="text-blue-600 focus:outline-none lg:hidden"
-            onClick={() => setIsSidebarOpen(true)}
-          >
-            <FaBars size={24} />
-          </button>
-          <h2 className="text-2xl font-bold">
-            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-          </h2>
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white shadow-sm">
+          <div className="px-6 py-4">
+            <h2 className="text-2xl font-bold text-gray-800">
+              {navigationItems.find((item) => item.id === activeTab)?.label ||
+                "Dashboard"}
+            </h2>
+          </div>
         </header>
-        <main>{renderContent()}</main>
+
+        <main className="flex-1 p-6 overflow-x-hidden">{renderContent()}</main>
       </div>
 
-      {/* Overlay when sidebar is open on mobile */}
-      {isSidebarOpen && (
+      {/* Overlay for mobile */}
+      {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
+          className="fixed inset-0 bg-black bg-opacity-50 lg:hidden z-30"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
       )}
+
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };
