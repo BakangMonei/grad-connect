@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 import { getAuth } from "firebase/auth";
 import JobPosts from "./JobPosts";
+import GraduateProfile from "./GraduateProfile";
 
 const GraduateDashboard = () => {
   const [activeTab, setActiveTab] = useState("jobs");
@@ -50,8 +51,8 @@ const GraduateDashboard = () => {
       case "JobPosts":
         return <JobPosts />;
       case "profile":
-      default:
-      // return <JobManagement />;
+        return <GraduateProfile/>
+
     }
   };
 
@@ -60,7 +61,7 @@ const GraduateDashboard = () => {
       <aside className="w-64 bg-blue-600 text-white flex-shrink-0">
         <div className="p-6 text-2xl font-bold">Graduate Dashboard</div>
         <div>
-          {userData.firstName} {userData.firstName}
+          {userData.firstName} {userData.lastName}
         </div>
         <nav className="mt-6">
           <ul>
